@@ -6,6 +6,7 @@
 #define BYTE unsigned char
 
 #define widthbytes(bits) (((bits)+31)/32*4)
+#define SWAP(x,y,t) ((t)=(x),(x)=(y),(y)=(t))
 
 typedef struct tagRGBQUAD{
 	BYTE rgbBlue; 
@@ -19,6 +20,34 @@ unsigned char clip(int value, int min, int max)
 {
     return(value > max? max : value < min? min : value);
 }
+
+void quicksort(int arr[], int left, int right) {
+
+	if (left >= right) {//정렬할 데이터 수 1의 경우
+		return;
+	}
+
+	int pivot = left;//피봇을 맨 왼쪽으로 설정한 경우
+	int i = left + 1;//i는 피봇 바로 오른쪽
+	int j = right;   //j는 맨 오른쪽
+	int temp;
+	
+	while (i <= j) {//i가 j이하일 때까지
+		while (arr[i] <= arr[pivot])//i의 값이 피봇 이하이면
+			i++;
+		while (arr[j] >= arr[pivot] && j > left)
+		//j의 값이 피봇보다 크고, j가 left보다 큰 경우에 한하여
+			j--;
+		if(i>j)//i와 j가 크로스 되었을 경우
+			SWAP(arr[j], arr[pivot], temp);
+		else//i가 j보다 작은 경우는 피봇과 교체하지 않음.
+			SWAP(arr[i], arr[j], temp);
+	}
+
+	quicksort(arr, left, j - 1);//피봇 기준 왼쪽 영역, 피봇보다 작은수
+	quicksort(arr, j+1, right); //피봇 기준 오른쪽 영역, 피봇보다 큰수
+}
+
 
 int main(int argc, char** argv) {
 	FILE* fp; 
@@ -104,12 +133,6 @@ int main(int argc, char** argv) {
 			int g = inimg[j+(i*width+1)]; 
 			int r = inimg[j+(i*width+2)];
 
-			/*if(j == rand()%(width*3+1) || i == rand()%(height*3+1)){
-				b += 255; //0~255까지의 숫자만 출력 (255-0+1)+0
-				g += 255;
-				r += 255; 
-			}*/
-						
 			outimg[j+width*i+0]= clip(b, 0, 255);
 			outimg[j+width*i+1]= clip(g, 0, 255);
 			outimg[j+width*i+2]= clip(r, 0, 255);
@@ -125,7 +148,29 @@ int main(int argc, char** argv) {
 		outimg[j+width*i+1]= 255; //clip(g, 0, 255);
 		outimg[j+width*i+2]= 255; //clip(r, 0, 255);
 	}
+	
+	int median_R[9] = {0};
+	int median_B[9] = {0};
+	int median_G[9] = {0};
 
+	for(i=0; i<height*3; i+=3) { 
+		for(j=0; j<width*3; j+=3) {
+			for(int tmp=0; tmp < 9; tmp++) {
+				median_R[tmp] = outimg[j+width*i+0 + tmp];
+				median_G[tmp] = outimg[j+width*i+1 + tmp];
+				median_B[tmp] = outimg[j+width*i+2 + tmp];
+			}
+			quicksort(median_R, 0, 8);
+			quicksort(median_G, 0, 8);
+			quicksort(median_B, 0, 8);
+
+			//qsort(median[], 0, 9, quicksort);
+			outimg[j+width*i+0] = median_R[4]; 	
+			outimg[j+width*i+1] = median_G[4]; 	
+			outimg[j+width*i+2] = median_B[4]; 	
+		}
+	}
+	
 
 	size=widthbytes(bits*width); 
 	imagesize=height*size; 
