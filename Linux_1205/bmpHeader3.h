@@ -6,7 +6,7 @@ typedef struct __attribute__((__packed__)) {
     unsigned int bfSize; 		/* 파일의 크기: 4바이트 정수 */
     unsigned short bfReserved1; 	/* 추후의 확장을 위해 필드(reserved) */
     unsigned short bfReserved2; 	/* 추후의 확장을 위해 필드(reserved) */
-    unsigned int bfOffBits; 		/* 실제 이미지까지의 오프셋: 바이트 */
+    unsigned int bf0ffBits; 		/* 실제 이미지까지의 오프셋: 바이트 */
 } BITMAPFILEHEADER; 			/* BMP 파일 데이터를 위한 구조체 */
 
 typedef struct {
