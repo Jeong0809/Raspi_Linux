@@ -40,15 +40,13 @@ int main(int argc, char **argv)
 	
 	size = bmpInfoHeader.biWidth * 3; 
 
-	for(y = 0; y < bmpInfoHeader.biHeight; y++){
-		for(x = 0; x < bmpInfoHeader.biWidth*elemSize; x += 3){
-				B = inimg[x + y*size + 0];
-				G = inimg[x + y*size + 1];
-				R = inimg[x + y*size + 2];
+	for(y = 0; y < bmpInfoHeader.biHeight*bmpInfoHeader.biWidth; y++){
+				B = inimg[y*elemSize + 0];
+				G = inimg[y*elemSize + 1];
+				R = inimg[y*elemSize + 2];
 				
-				outimg[x / elemSize + y * bmpInfoHeader.biWidth]
+				outimg[y]
 					=(R*0.299F)+(G*0.587F)+(B*0.114F);
-		}
 	}
 
 	if((fp = fopen(argv[2], "wb")) == NULL) {
