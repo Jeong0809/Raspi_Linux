@@ -58,8 +58,8 @@ int main(int argc, char** argv)
     grayimg = (ubyte*)malloc(sizeof(ubyte)*imageSize);
     fread(inimg, sizeof(ubyte), imageSize, fp); 
     fclose(fp);
-
-	for(int y = 0; y < bmpInfoHeader.biHeight; y++) {
+    
+    for(int y = 0; y < bmpInfoHeader.biHeight; y++) {
         for(int x = 0; x < size; x+=elemSize) {
             ubyte b = inimg[x+y*size+0];
             ubyte g = inimg[x+y*size+1];
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 
     /* make padding image */
     memset(padimg, 0, (sizeof(ubyte)*imageSize + addSize));
-    //memset(outimg, 0, sizeof(ubyte)*imageSize);
+	
     for(y = 0; y < bmpInfoHeader.biHeight; y++) {
         for(x = 0; x < bmpInfoHeader.biWidth * elemSize; x+=elemSize) {
             for(z = 0; z < elemSize; z++) {
@@ -103,33 +103,33 @@ int main(int argc, char** argv)
        padimg[(bmpInfoHeader.biHeight+1)*padSize+padSize-elemSize+z]=grayimg[(bmpInfoHeader.biHeight-1)*size+size-elemSize+z];
     }
 
-	float x_kernel[3][3] = {{-1, 0, 1},
-							{-2, 0, 2},
-							{-1, 0, 1}};
+    float x_kernel[3][3] = {{-1, 0, 1},
+	   		    {-2, 0, 2},
+			    {-1, 0, 1}};
 
-	float y_kernel[3][3] = {{1, 2, 1},
-							{0, 0, 0},
-							{-1, -2, -1}};
+    float y_kernel[3][3] = {{1, 2, 1},
+			    {0, 0, 0},
+		            {-1, -2, -1}};
 
     memset(outimg, 0, sizeof(ubyte)*imageSize);
 
     for(y = 1; y < bmpInfoHeader.biHeight + 1; y++) { 
         for(x = elemSize; x < padSize; x+=elemSize) {
     		for(z = 0; z < elemSize; z++) {
-				float sumX = 0.0;
-				float sumY = 0.0;
+			float sumX = 0.0;
+			float sumY = 0.0;
 
                 for(int i = -1; i < 2; i++) {
                     for(int j = -1; j < 2; j++) {
-						sumX += x_kernel[i+1][j+1]*
-								padimg[(x+i*elemSize)+(y+j)*padSize+z];
-						sumY += y_kernel[i+1][j+1]*
-								padimg[(x+i*elemSize)+(y+j)*padSize+z];
+			sumX += x_kernel[i+1][j+1]*
+				padimg[(x+i*elemSize)+(y+j)*padSize+z];
+			sumY += y_kernel[i+1][j+1]*
+				padimg[(x+i*elemSize)+(y+j)*padSize+z];
                     }
                 }
                 outimg[(x-elemSize)+(y-1)*size+z] 
-						= LIMIT_UBYTE(sqrt(sumX*sumX + sumY*sumY));
-			}
+			= LIMIT_UBYTE(sqrt(sumX*sumX + sumY*sumY));
+		}
         }
     }         
      
@@ -144,9 +144,6 @@ int main(int argc, char** argv)
 
     /* BITMAPINFOHEADER 구조체의 데이터 */
     fwrite(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, fp);
-
-    //fwrite(inimg, sizeof(ubyte), imageSize, fp); 
-    //fwrite(padimg, sizeof(ubyte), imageSize, fp);
     fwrite(outimg, sizeof(ubyte), imageSize, fp);
 
     fclose(fp); 
