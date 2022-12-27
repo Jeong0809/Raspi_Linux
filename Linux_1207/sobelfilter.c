@@ -9,34 +9,7 @@
 
 /* 이미지 데이터의 경계 검사를 위한 매크로 */
 #define LIMIT_UBYTE(n) ((n)>UCHAR_MAX)?UCHAR_MAX:((n)<0)?0:(n)
-#define SWAP(x,y,t) ((t)=(x),(x)=(y),(y)=(t))
-
 typedef unsigned char ubyte;
-
-void quicksort(int arr[], int left, int right) {
-	if (left >= right) {//정렬할 데이터 수 1의 경우
-		return;
-	}
-	int pivot = left;//피봇을 맨 왼쪽으로 설정한 경우
-	int i = left + 1;//i는 피봇 바로 오른쪽
-	int j = right;   //j는 맨 오른쪽
-	int temp;
-	
-	while (i <= j) {//i가 j이하일 때까지
-		while (arr[i] <= arr[pivot])//i의 값이 피봇 이하이면
-			i++;
-		while (arr[j] >= arr[pivot] && j > left)
-		//j의 값이 피봇보다 크고, j가 left보다 큰 경우에 한하여
-			j--;
-		if(i>j)//i와 j가 크로스 되었을 경우
-			SWAP(arr[j], arr[pivot], temp);
-		else//i가 j보다 작은 경우는 피봇과 교체하지 않음.
-			SWAP(arr[i], arr[j], temp);
-	}
-	quicksort(arr, left, j - 1);//피봇 기준 왼쪽 영역, 피봇보다 작은수
-	quicksort(arr, j+1, right); //피봇 기준 오른쪽 영역, 피봇보다 큰수
-}
-
 
 int main(int argc, char** argv) 
 {
